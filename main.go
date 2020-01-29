@@ -1,9 +1,10 @@
 package main
 
 import (
-	"os"
+	"fmt"
 	"net/http"
 	_ "net/http/pprof"
+	"os"
 
 	consulApi "github.com/hashicorp/consul/api"
 	"github.com/prometheus/client_golang/prometheus"
@@ -30,7 +31,10 @@ var (
 		Default("false").Bool()
 )
 
-const namespace = "consul"
+const (
+	namespace = "consul"
+	consulWaitTime = 3
+) 
 
 var (
 	leader = prometheus.NewDesc(
@@ -43,6 +47,12 @@ var (
 		prometheus.BuildFQName(namespace, "", "stats_last_scrape_error"),
 		"Failed to scrape metrics",
 		nil, nil,
+	)
+
+	consulInfo = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, "", "stats_info"),
+		"Consul Version",
+		[]string{"version"}, nil,
 	)
 )
 
@@ -62,6 +72,7 @@ func NewExporter() (*Exporter, error) {
 	consulConfig := consulApi.DefaultConfig()
 	consulConfig.Address = *consulAddress
 	consulConfig.Token = *consulToken
+	consulConfig.WaitTime = consulWaitTime
 
 	if *sslInsecure {
 		consulConfig.TLSConfig.InsecureSkipVerify = true
@@ -81,6 +92,7 @@ func NewExporter() (*Exporter, error) {
 // Describe describes the metric ever exported by Consul Stats Exporter
 func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 	ch <- leader
+	ch <- consulInfo
 	ch <- lastScrapeError
 }
 
@@ -109,15 +121,43 @@ func (e *Exporter) collectLeaderMetric(ch chan<- prometheus.Metric) error {
 	return nil
 }
 
+// Collect version info from configured Consul and delivers them as Prom metrics
+func (e *Exporter) collectConsulVersionMetric(ch chan<- prometheus.Metric) error {
+	agentSelf, err := e.client.Agent().Self()
+	if err != nil {
+		return err
+	}
+
+	consulVersion := fmt.Sprintf("%v", agentSelf["Config"]["Version"])
+
+	ch <- prometheus.MustNewConstMetric(
+		consulInfo, prometheus.GaugeValue, 1, consulVersion,
+	)
+
+	return nil
+}
+
 // Collect last scrape error
 func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
-	err := e.collectLeaderMetric(ch)
-	if err != nil {
+	var scrapeError bool
+
+	if err := e.collectLeaderMetric(ch); err != nil {
+		scrapeError = true
 		log.Error(err)
 	}
 
+	if err := e.collectConsulVersionMetric(ch); err != nil {
+		scrapeError = true
+		log.Error(err)
+	}
+
+	scrapeErrorFloat := 0.0
+	if scrapeError {
+		scrapeErrorFloat = 1.0
+	}
+
 	ch <- prometheus.MustNewConstMetric(
-		lastScrapeError, prometheus.GaugeValue, bool2float(err != nil),
+		lastScrapeError, prometheus.GaugeValue, scrapeErrorFloat,
 	)
 }
 

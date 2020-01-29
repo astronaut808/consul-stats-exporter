@@ -8,6 +8,7 @@ Two metrics are currently available:
 
 * `consul_stats_leader`: 1 - leader, 0 - follower.
 * `consul_stats_last_scrape_error`: 1 - failed to scrape consul_stats leader metric, 0 - no scraping errors.
+* `consul_stats_info` with label: version [example: consul_stats_info{version="1.5.3"} 1]
 
 [Consul Operator Raft list-peers](https://www.consul.io/docs/commands/operator/raft.html#list-peers)
 
