@@ -8,9 +8,10 @@ Two metrics are currently available:
 
 * `consul_stats_leader`: 1 - leader, 0 - follower.
 * `consul_stats_last_scrape_error`: 1 - failed to scrape consul_stats leader metric, 0 - no scraping errors.
-* `consul_stats_info` with label: version [example: consul_stats_info{version="1.5.3"} 1]
-
 [Consul Operator Raft list-peers](https://www.consul.io/docs/commands/operator/raft.html#list-peers)
+
+* `consul_stats_info` - Example: `consul_stats_info{version="1.5.3"} 1`
+[Consul Agent Self](https://www.consul.io/api/agent.html#read-configuration)
 
 ## Flags
 
@@ -24,7 +25,7 @@ Flags:
                       Address to listen on for web interface and telemetry.
       --consul-address="http://127.0.0.1:8500"  
                       Consul agent address.
-      --token=""      Consul ACL token for read raft peers. [$CONSUL_HTTP_TOKEN]
+      --token=""      Consul ACL token. ACL required: `operator:read`,`agent:read` [$CONSUL_HTTP_TOKEN]
       --web.telemetry-path="/metrics"  
                       Path under which to expose metrics.
       --insecure-ssl  Set SSL to ignore certificate validation.
