@@ -5,6 +5,7 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
+	"strconv"
 
 	consulApi "github.com/hashicorp/consul/api"
 	"github.com/prometheus/client_golang/prometheus"
@@ -32,9 +33,9 @@ var (
 )
 
 const (
-	namespace = "consul"
+	namespace      = "consul"
 	consulWaitTime = 3
-) 
+)
 
 var (
 	leader = prometheus.NewDesc(
@@ -49,10 +50,22 @@ var (
 		nil, nil,
 	)
 
+	consulMembers = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, "", "stats_members_count"),
+		"Consul Members",
+		nil, nil,
+	)
+
+	consulBootstrapExpect = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, "", "stats_bootstap_expect"),
+		"Consul Bootstrap Expect",
+		nil, nil,
+	)
+
 	consulInfo = prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, "", "stats_info"),
 		"Consul Version",
-		[]string{"version"}, nil,
+		[]string{"version", "datacenter"}, nil,
 	)
 )
 
@@ -94,6 +107,8 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 	ch <- leader
 	ch <- consulInfo
 	ch <- lastScrapeError
+	ch <- consulMembers
+	ch <- consulBootstrapExpect
 }
 
 func bool2float(b bool) float64 {
@@ -121,17 +136,61 @@ func (e *Exporter) collectLeaderMetric(ch chan<- prometheus.Metric) error {
 	return nil
 }
 
-// Collect version info from configured Consul and delivers them as Prom metrics
-func (e *Exporter) collectConsulVersionMetric(ch chan<- prometheus.Metric) error {
-	agentSelf, err := e.client.Agent().Self()
+func (e *Exporter) collectMembersMetric(ch chan<- prometheus.Metric) error {
+	self, err := e.client.Agent().Self()
 	if err != nil {
 		return err
 	}
 
-	consulVersion := fmt.Sprintf("%v", agentSelf["Config"]["Version"])
+	serfLan, ok := self["Stats"]["serf_lan"].(map[string]interface{})
+	if !ok {
+		return err
+	}
+
+	f, err := strconv.ParseFloat(serfLan["members"].(string), 64)
+	if err != nil {
+		return err
+	}
 
 	ch <- prometheus.MustNewConstMetric(
-		consulInfo, prometheus.GaugeValue, 1, consulVersion,
+		consulMembers, prometheus.GaugeValue, f,
+	)
+
+	return nil
+}
+
+func (e *Exporter) collectBootstrapExpectMetric(ch chan<- prometheus.Metric) error {
+	self, err := e.client.Agent().Self()
+	if err != nil {
+		return nil
+	}
+
+	s := fmt.Sprintf("%v", self["DebugConfig"]["BootstrapExpect"])
+
+	f, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		return err
+	}
+
+	ch <- prometheus.MustNewConstMetric(
+		consulBootstrapExpect, prometheus.GaugeValue, f,
+	)
+
+	return nil
+}
+
+// Collect version info from configured Consul and delivers them as Prom metrics
+func (e *Exporter) collectConsulInfoMetric(ch chan<- prometheus.Metric) error {
+	self, err := e.client.Agent().Self()
+	if err != nil {
+		return err
+	}
+
+	consulVersion := fmt.Sprintf("%v", self["Config"]["Version"])
+	consulDataCenter := fmt.Sprintf("%v", self["Config"]["Datacenter"])
+
+	ch <- prometheus.MustNewConstMetric(
+		consulInfo, prometheus.GaugeValue, 1, consulVersion, consulDataCenter,
 	)
 
 	return nil
@@ -146,7 +205,17 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 		log.Error(err)
 	}
 
-	if err := e.collectConsulVersionMetric(ch); err != nil {
+	if err := e.collectConsulInfoMetric(ch); err != nil {
+		scrapeError = true
+		log.Error(err)
+	}
+
+	if err := e.collectMembersMetric(ch); err != nil {
+		scrapeError = true
+		log.Error(err)
+	}
+
+	if err := e.collectBootstrapExpectMetric(ch); err != nil {
 		scrapeError = true
 		log.Error(err)
 	}
