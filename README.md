@@ -10,7 +10,7 @@ Two metrics are currently available:
 * `consul_stats_last_scrape_error`: 1 - failed to scrape consul_stats leader metric, 0 - no scraping errors.
 * `consul_stats_members_count`: number of members that a Consul agent knows about.
 * `consul_stats_bootstrap_expect`: number of expected servers in the datacenter.
-* `consul_stats_info` - example: `consul_stats_info{bootstrap_expect="3",datacenter="testdc",version="1.5.3"} 1`
+* `consul_stats_info` - example: `consul_stats_info{datacenter="testdc",version="1.5.3"} 1`
    
 ## Docs
 
