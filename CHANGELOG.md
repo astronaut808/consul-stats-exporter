@@ -1,4 +1,4 @@
- Changelog
+# Changelog
 
 ## [1.2.0] 2020-01-30
 ### Added
