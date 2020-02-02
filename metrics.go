@@ -8,6 +8,52 @@ import (
 	"github.com/prometheus/common/log"
 )
 
+const namespace = "consul"
+
+var (
+	leader = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, "", "stats_leader"),
+		"Consul cluster leader",
+		nil, nil,
+	)
+
+	lastScrapeError = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, "", "stats_last_scrape_error"),
+		"Failed to scrape metrics",
+		nil, nil,
+	)
+
+	consulLanMembers = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, "", "stats_lan_members_count"),
+		"Consul Members",
+		nil, nil,
+	)
+
+	consulWanMembers = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, "", "stats_wan_members_count"),
+		"Consul Members",
+		nil, nil,
+	)
+
+	consulBootstrapExpect = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, "", "stats_bootstap_expect"),
+		"Consul Bootstrap Expect",
+		nil, nil,
+	)
+
+	consulNodeStatus = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, "", "stats_node_status"),
+		"Consul Node Status: alive, left or failed",
+		nil, nil,
+	)
+
+	consulInfo = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, "", "stats_info"),
+		"Consul Version",
+		[]string{"version", "datacenter"}, nil,
+	)
+)
+
 func bool2float(b bool) float64 {
 	if b {
 		return 1
@@ -175,4 +221,15 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(
 		lastScrapeError, prometheus.GaugeValue, scrapeErrorFloat,
 	)
+}
+
+// Describe describes the metric ever exported by Consul Stats Exporter
+func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
+	ch <- leader
+	ch <- consulInfo
+	ch <- lastScrapeError
+	ch <- consulLanMembers
+	ch <- consulWanMembers
+	ch <- consulNodeStatus
+	ch <- consulBootstrapExpect
 }
