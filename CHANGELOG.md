@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.0] 2020-02-03
+### Added
+- Add Consul tokenfile support
+
+### Changed
+- Update changelog
+- Update flags
+
 ## [2.1.0] 2020-02-03
 ### Added
 - Add metric `consul_stats_lan_failed_members_count`
