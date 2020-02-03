@@ -122,12 +122,12 @@ func (e *Exporter) collectLanMembersMetric(ch chan<- prometheus.Metric) error {
 
 	fl, err := strconv.ParseFloat(serfLan["failed"].(string), 64)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	ll, err := strconv.ParseFloat(serfLan["left"].(string), 64)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	ch <- prometheus.MustNewConstMetric(
@@ -163,12 +163,12 @@ func (e *Exporter) collectWanMembersMetric(ch chan<- prometheus.Metric) error {
 
 	fw, err := strconv.ParseFloat(serfWan["failed"].(string), 64)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	lw, err := strconv.ParseFloat(serfWan["left"].(string), 64)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	ch <- prometheus.MustNewConstMetric(
