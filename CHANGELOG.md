@@ -3,7 +3,7 @@
 ## [2.0.0] 2020-02-02
 ### Added
 - Add metric `consul_stats_wan_members_count`
-- Add metric `consul_stats_node_status`
+- Add metric `consul_stats_services_count`
 
 ### Changed
 - Update metric `consul_stats_lan_members_count`

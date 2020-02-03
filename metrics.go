@@ -41,9 +41,9 @@ var (
 		nil, nil,
 	)
 
-	consulNodeStatus = prometheus.NewDesc(
-		prometheus.BuildFQName(namespace, "", "stats_node_status"),
-		"Consul Node Status: alive, left or failed",
+	consulServices = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, "", "stats_services_count"),
+		"Consul Services",
 		nil, nil,
 	)
 
@@ -125,18 +125,16 @@ func (e *Exporter) collectWanMembersMetric(ch chan<- prometheus.Metric) error {
 	return nil
 }
 
-func (e *Exporter) collectNodeStatusMetric(ch chan<- prometheus.Metric) error {
-	self, err := e.client.Agent().Self()
+func (e *Exporter) collectconsulServicesCountMetric(ch chan<- prometheus.Metric) error {
+	self, _, err := e.client.Catalog().Services(nil)
 	if err != nil {
 		return err
 	}
 
-	nodeStatus := fmt.Sprintf("%v", self["Member"]["Status"])
-
-	f, err := strconv.ParseFloat(nodeStatus, 64)
+	f := float64(len(self))
 
 	ch <- prometheus.MustNewConstMetric(
-		consulNodeStatus, prometheus.GaugeValue, f,
+		consulServices, prometheus.GaugeValue, f,
 	)
 
 	return nil
@@ -208,7 +206,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 		log.Error(err)
 	}
 
-	if err := e.collectNodeStatusMetric(ch); err != nil {
+	if err := e.collectconsulServicesCountMetric(ch); err != nil {
 		scrapeError = true
 		log.Error(err)
 	}
@@ -230,6 +228,6 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 	ch <- lastScrapeError
 	ch <- consulLanMembers
 	ch <- consulWanMembers
-	ch <- consulNodeStatus
+	ch <- consulServices
 	ch <- consulBootstrapExpect
 }
