@@ -23,6 +23,7 @@ Metrics are currently available:
 * [Operator Raft list-peers](https://www.consul.io/docs/commands/operator/raft.html#list-peers)
 * [Agent Read Configuration](https://www.consul.io/api/agent.html#read-configuration)
 * [Consul Catalog List Services](https://www.consul.io/docs/commands/catalog/services.html)
+* [Consul Catalog List Nodes](https://www.consul.io/docs/commands/catalog/nodes.html)
 
 ## Flags
 
