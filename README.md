@@ -4,7 +4,7 @@ Export [Hashicorp Consul](https://github.com/hashicorp/consul) cluster metrics t
 
 ## Exported Metrics
 
-Two metrics are currently available:
+Metrics are currently available:
 
 * `consul_stats_leader`: 1 - leader, 0 - follower.
 * `consul_stats_last_scrape_error`: 1 - failed to scrape consul_stats leader metric, 0 - no scraping errors.
@@ -39,3 +39,7 @@ Flags:
       --insecure-ssl  Set SSL to ignore certificate validation.
       --version       Show application version.33
 ```
+
+## Information
+
+Exporter tested on Consul 1.5.3. If using a different version and observing a problem, create an issue.
