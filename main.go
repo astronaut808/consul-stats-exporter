@@ -20,7 +20,7 @@ var (
 		"Consul ACL token for read Consul stats. [$CONSUL_HTTP_TOKEN]").
 		Default("").String()
 	consulTokenFile = kingpin.Flag("tokenfile",
-		"File with Consul ACL token for read Consul stats. [$CONSUL_HTTP_TOKENFILE]").
+		"File with Consul ACL token for read Consul stats. [$CONSUL_HTTP_TOKEN_FILE]").
 		Default("").String()
 	metricsPath = kingpin.Flag("web.telemetry-path",
 		"Path under which to expose metrics.").

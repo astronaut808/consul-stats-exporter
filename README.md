@@ -38,7 +38,7 @@ Flags:
       --consul-address="http://127.0.0.1:8500"  
                       Consul agent address.
       --token=""      Consul ACL token for read Consul stats. [$CONSUL_HTTP_TOKEN]
-      --tokenfile=""  File with Consul ACL token for read Consul stats. [$CONSUL_HTTP_TOKENFILE]
+      --tokenfile=""  File with Consul ACL token for read Consul stats. [$CONSUL_HTTP_TOKEN_FILE]
       --web.telemetry-path="/metrics"  
                       Path under which to expose metrics.
       --insecure-ssl  Set SSL to ignore certificate validation.
