@@ -84,7 +84,7 @@ func bool2float(b bool) float64 {
 	return 0
 }
 
-// Collect fetches the stats from configured Consul and delivers them as Prom metrics
+// Collect fetches the raft status from configured Consul and delivers them as Prom metrics
 func (e *Exporter) collectLeaderMetric(ch chan<- prometheus.Metric) error {
 	reply, err := e.client.Operator().RaftGetConfiguration(nil)
 	if err != nil {
@@ -102,6 +102,7 @@ func (e *Exporter) collectLeaderMetric(ch chan<- prometheus.Metric) error {
 	return nil
 }
 
+// Collect fetches the LAN members count from configured Consul and delivers them as Prom metrics
 func (e *Exporter) collectLanMembersMetric(ch chan<- prometheus.Metric) error {
 	self, _, err := e.client.Catalog().Nodes(&consulApi.QueryOptions{})
 	if err != nil {
@@ -145,6 +146,7 @@ func (e *Exporter) collectLanMembersMetric(ch chan<- prometheus.Metric) error {
 	return nil
 }
 
+// Collect fetches the WAN members count from configured Consul and delivers them as Prom metrics
 func (e *Exporter) collectWanMembersMetric(ch chan<- prometheus.Metric) error {
 	self, err := e.client.Agent().Self()
 	if err != nil {
@@ -185,6 +187,7 @@ func (e *Exporter) collectWanMembersMetric(ch chan<- prometheus.Metric) error {
 	return nil
 }
 
+// Collect fetches all known unique services from configured Consul and delivers them as Prom metrics
 func (e *Exporter) collectconsulServicesCountMetric(ch chan<- prometheus.Metric) error {
 	self, _, err := e.client.Catalog().Services(nil)
 	if err != nil {
