@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.0] 2020-02-03
+### Added
+- Add metric `consul_stats_lan_failed_members_count`
+- Add metric `consul_stats_lan_left_members_count`
+- Add metric `consul_stats_wan_failed_members_count`
+- Add metric `consul_stats_wan_left_members_count`
+
+### Changed
+- Update changelog
+- Update README
+- Update comments
+
 ## [2.0.0] 2020-02-02
 ### Added
 - Add metric `consul_stats_wan_members_count`

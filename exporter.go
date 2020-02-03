@@ -9,7 +9,6 @@ import (
 
 const consulWaitTime = 3
 
-
 // Exporter collects Consul leader
 type Exporter struct {
 	hostname string
