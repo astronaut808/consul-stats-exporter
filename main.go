@@ -17,7 +17,10 @@ var (
 		"Consul agent address.").
 		Default("http://127.0.0.1:8500").String()
 	consulToken = kingpin.Flag("token",
-		"Consul ACL token for read raft peers. [$CONSUL_HTTP_TOKEN]").
+		"Consul ACL token for read Consul stats. [$CONSUL_HTTP_TOKEN]").
+		Default("").String()
+	consulTokenFile = kingpin.Flag("tokenfile",
+		"File with Consul ACL token for read Consul stats. [$CONSUL_HTTP_TOKEN_FILE]").
 		Default("").String()
 	metricsPath = kingpin.Flag("web.telemetry-path",
 		"Path under which to expose metrics.").

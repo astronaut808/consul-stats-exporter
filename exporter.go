@@ -25,6 +25,7 @@ func NewExporter() (*Exporter, error) {
 	consulConfig := consulApi.DefaultConfig()
 	consulConfig.Address = *consulAddress
 	consulConfig.Token = *consulToken
+	consulConfig.TokenFile = *consulTokenFile
 	consulConfig.WaitTime = consulWaitTime
 
 	if *sslInsecure {

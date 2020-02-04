@@ -28,7 +28,7 @@ Metrics are currently available:
 ## Flags
 
 ```bash
-$ ./consul-stats-exporter --help
+./consul-stats-exporter --help
 usage: consul-stats-exporter [<flags>]
 
 Flags:
@@ -37,12 +37,12 @@ Flags:
                       Address to listen on for web interface and telemetry.
       --consul-address="http://127.0.0.1:8500"  
                       Consul agent address.
-      --token=""      Consul ACL token. [$CONSUL_HTTP_TOKEN]
-                      ACL required: `operator:read`, `agent:read`, `service:read, node:read`
+      --token=""      Consul ACL token for read Consul stats. [$CONSUL_HTTP_TOKEN]
+      --tokenfile=""  File with Consul ACL token for read Consul stats. [$CONSUL_HTTP_TOKEN_FILE]
       --web.telemetry-path="/metrics"  
                       Path under which to expose metrics.
       --insecure-ssl  Set SSL to ignore certificate validation.
-      --version       Show application version.33
+      --version       Show application version.
 ```
 
 ## Information
