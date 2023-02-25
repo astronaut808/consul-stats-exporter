@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.2.1] 2023-02-25
+### Fixed
+- Updated dependencies for fix security vulnerability
+
 ## [2.2.0] 2020-02-03
 ### Added
 - Add Consul tokenfile support
